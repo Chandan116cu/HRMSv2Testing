@@ -26,8 +26,8 @@ class DashBoard extends Component {
     }
 }
 mapStateToProps=(state)=> {
-    const { days } = state
-    return { timesheet: days.payload }
+    const { timeSheets } = state
+    return { timesheet : timeSheets.payload }
 }
 
 export default connect(mapStateToProps)(DashBoard)

@@ -54,7 +54,7 @@ import { bindActionCreators } from 'redux';
         </View>
         <View>
         <Text>Company</Text>
-          <Dropdown
+          <Dropdown 
         label='Choose Company'
         data={data}
          />

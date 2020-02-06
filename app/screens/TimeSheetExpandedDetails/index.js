@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Text, View, TouchableOpacity, ScrollView, SafeAreaView, Alert, Modal, TextInput, Button } from 'react-native';
+import { Text, View, TouchableOpacity, ScrollView, SafeAreaView, Alert, Modal, TextInput, Button, ActivityIndicator, ProgressBarAndroid } from 'react-native';
 import ProgressCircle from 'react-native-progress-circle';
 import Details from '../../components/Details';
 import thunk from "redux-thunk";
@@ -8,6 +8,8 @@ import { Navigation } from "react-native-navigation"
 import DatePicker from 'react-native-datepicker'
 import { bindActionCreators } from 'redux';
 import fetchSheets from '../../services/api/fetchSheets'
+import {Loading} from '../../modules/actions/days'
+
 // import styles from "../../components/Details/styles";
 class TimeSheetExpandedDetails extends Component {
 
@@ -19,46 +21,56 @@ class TimeSheetExpandedDetails extends Component {
     modalVisible: false,
   }
   componentDidMount() {
-    const { fetchData } = this.props;
-    let data = {
-      day: null,
-      from: this.props.from,
-      to: this.props.to,
-    }
-    this.props.fetchSheets(data)
+    // let data = {
+    //   day: null,
+    //   from: this.props.from,
+    //   to: this.props.to,
+    // }
+    // this.props.fetchSheets(data)
   }
 
-  ListAsPerDay = (day) => {
+  ListAsPerDay =  (day) => {
 
     let data = {
       day: day,
       from: this.props.from,
       to: this.props.to,
     }
-    console.log(this.props)
+ 
     this.props.fetchSheets(data)
+  
   }
 
   
   state = {
     showSheet: true,
-    day: "Monday"
+    day: "Monday",
+    timesheetToRender: this.props.timesheet,
+    isLoading: false
+    // isLoading: false
   };
 
   render() {
 
     let content;
     let contentToShow;
-    if (this.state.showSheet === true) {
+    if (this.state.showSheet === true && this.props.loading===false) {
       contentToShow = (
-        this.props.timesheet.map((payload, index) => (
+       this.props.timesheet.map((payload, index) => (
           <Details
             key={index}
             data={payload}
             {...this.props} />
         ))
       )
-    }
+    }else {
+      
+       contentToShow = (
+      //  <ActivityIndicator size="large" color="blue" style={{alignContent:"center"}}/>
+       <ProgressBarAndroid/>
+       ) 
+      }
+    
     content = (
       <SafeAreaView>
 
@@ -208,7 +220,7 @@ class TimeSheetExpandedDetails extends Component {
             <View style={{ borderTopWidth: 2, borderColor: "#F4F2F2" }} />
           </View>
           <ScrollView>
-
+            
             <View style={{ padding: 20, marginRight: 10, marginBottom: 500 }}>{contentToShow}</View>
           </ScrollView>
 
@@ -220,8 +232,9 @@ class TimeSheetExpandedDetails extends Component {
   }
 }
 mapStateToProps = (state) => {
-  const { days } = state
-  return { timesheet: days.payload }
+  const { days} = state
+  return { timesheet: days.data,
+  loading: days.isLoading }
 }
 
 const mapDispatchToProps = dispatch => bindActionCreators({

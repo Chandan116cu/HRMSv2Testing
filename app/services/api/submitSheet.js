@@ -8,41 +8,51 @@ export function SubmitSheets(data) {
     formdata.append('day',data.hours)
     formdata.append('day',data.task)
     formdata.append('day',data.company)
-    // var request = new XMLHttpRequest();
-    // request.open('GET','https://localhost:44348/api/values')
-    // request.send();
-    // console.log('success', request);
-    dispatch(Loading());
-    return dispatch =>
-    
-    fetch('https://localhost:44348/api/values', {
+    return (dispatch) =>  {
+      dispatch(Loading());
+      fetch('http://172.25.122.36/api/values/', {
       method: 'POST',
       headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        cache: "no-cache",
-        mode: "cors",
-        
+        'Accept': 'application/json',
+    'Content-Type': 'application/json',
+        'cache': "no-cache",
+        type: 'application/json',
+        // 'mode': "cors",
+        // 'body': formdata
       },
-      body: JSON.stringify({
-        data: formdata
-      }),
-    })
-    .then(response => {
-      if (response.status >= 200 && response.status < 300) {
-         console.log(response);
-        
-          dispatch(success(response));
-      } else {
-        // const error = new Error(response.statusText);
-        // error.response = response;
-        // dispatch(loginError(error));
-        // throw error;
-        dispatch(error())
-        console.log("error in response not 200")
+      body: {
+        data : formdata
       }
     })
+    .then((response)=>{
+    
+     
+      if(response.status>=200&& response.status<300){
+        return response.json();
+      }else{
+        dispatch(error());
+      return {'error':'400'};
+      }
+      
+    }).then(async function(response){
+      // console.log(response)
+
+
+
+      dispatch(success(response));
+    //   if (response.status >= 200 && response.status < 300) {
+         
+    //     let res = (response);
+    //     console.log(res);
+      
+      
+    // } else {
+    
+    //   console.log("error in response not 200")
+    // }
+  })
     .catch(error => { console.log('request failed', error); });
+    }
 }
 
 
